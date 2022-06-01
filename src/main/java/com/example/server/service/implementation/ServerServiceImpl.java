@@ -97,7 +97,7 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public Boolean report() throws FileNotFoundException, JRException {
-        String path = "e:\\report";
+        String path = "D:\\report";
         List<Server> serverList = serverRepo.findAll();
         File file = ResourceUtils.getFile("classpath:article.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
