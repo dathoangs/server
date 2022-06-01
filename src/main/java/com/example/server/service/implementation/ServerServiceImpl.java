@@ -6,17 +6,21 @@ import com.example.server.repo.ServerRepo;
 import com.example.server.service.ServerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanArrayDataSource;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static java.lang.Boolean.TRUE;
 import static org.springframework.data.domain.PageRequest.*;
@@ -91,5 +95,17 @@ public class ServerServiceImpl implements ServerService {
                 .path("/server/image/" + imageNames[new Random().nextInt(4)]).toUriString();
     }
 
-
+    @Override
+    public Boolean report() throws FileNotFoundException, JRException {
+        String path = "e:\\report";
+        List<Server> serverList = serverRepo.findAll();
+        File file = ResourceUtils.getFile("classpath:article.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(serverList);
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("createdBy", "My self");
+        JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+        JasperExportManager.exportReportToPdfFile(print, path+"\\article.pdf");
+        return true;
+    }
 }

@@ -4,6 +4,7 @@ import com.example.server.enumeration.Status;
 import com.example.server.model.Response;
 import com.example.server.model.Server;
 import com.example.server.service.implementation.ServerServiceImpl;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -118,4 +120,17 @@ public class ServerController {
         return Files.readAllBytes(Paths.get(System.getProperty("user.home")
                 + "/Downloads/Fullstack/Resources/" + fileName));
     }
+
+    @GetMapping(path = "/report")
+    public ResponseEntity<Response> generateReport() throws FileNotFoundException, JRException{
+        return ResponseEntity.ok(
+                Response.builder()
+                        .timeStamp(now())
+                        .data(of("report", serverService.report()))
+                        .message("Report Generated")
+                        .status(OK)
+                        .build()
+        );
+    }
+
 }
